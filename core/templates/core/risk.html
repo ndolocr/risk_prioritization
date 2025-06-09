@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Fuzzy Risk Score</title>
+</head>
+<body>
+    <h1>DREAD Risk Calculator</h1>
+    <form method="post" action="{% url 'risk:calculate_risk' %}">
+        {% csrf_token %}
+        <label>Exploitability:</label> <input type="number" name="exploitability" value="{{ input.e }}"><br>
+        <label>Affected Users:</label> <input type="number" name="affected_users" value="{{ input.a }}"><br>
+        <label>Discoverability:</label> <input type="number" name="discoverability" value="{{ input.d }}"><br>
+        <label>Reproducibility:</label> <input type="number" name="reproducibility" value="{{ input.r }}"><br>
+        <label>Damage Potential:</label> <input type="number" name="damage_potential" value="{{ input.dp }}"><br>
+        <button type="submit">Calculate Risk</button>
+    </form>
+
+    {% if result %}
+    <h2>Calculated Risk Score: {{ result }}</h2>
+    <img src="data:image/png;base64,{{ graph }}" />
+    {% endif %}
+</body>
+</html>
