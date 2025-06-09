@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+    <!-- <h1>DREAD Risk Calculator</h1> -->
+     <div class="row">
+        <div class="col-md-12">
+            <div class="alert alert-primary" role="alert">
+                <h1>DREAD RULES</h1>
+            </div>
+        </div>
+
+        <div class="col-md-6" style="margin-bottom: 10px; margin-top: 10px;">
+            <a href="{% url 'risk:download_fuzzy_rules_with_cost' %}" class="btn btn-info"> Download Rules </a> <br>
+        </div>
+
+        <div class="col-md-6" style="margin-bottom: 10px; margin-top: 10px;">
+            Number of Rules: - {{ number_of_rules }}
+        </div>
+
+        <div class="col-md-12">
+            <table class="table">
+                <thead class="thead-dark">
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Rule</th>                    
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for rule in all_rules %}
+                    <tr>
+                        <th scope="row">{{forloop.counter}}</th>
+                        <td> <pre> {{ rule|safe }} </pre> </td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="2">No rules found</td></tr>
+                    {% endfor %}                  
+                </tbody>
+            </table>
+
+        </div>
+     </div>
+
+  {% endblock %}
