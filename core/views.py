@@ -6,11 +6,14 @@ import numpy as np
 import skfuzzy as fuzz
 import matplotlib
 matplotlib.use('Agg')
+from datetime import datetime
 import matplotlib.pyplot as plt
 from skfuzzy import control as ctrl
 
 from django.shortcuts import render
 from django.http import HttpResponse
+from django.utils.text import slugify
+
 
 
 # Create your views here.
@@ -204,7 +207,7 @@ def risk_view(request):
     return render(request, 'core/risk.html')
 
 
-def rules():
+def generate_rules():
     # Define membership levels
     levels = ['low', 'medium', 'high']
     antecedents = ['damage_potential', 'exploitability', 'reproducibility', 'affected_users', 'discoverability']
@@ -215,17 +218,35 @@ def rules():
     # Create rules list
     rules = []
 
+    rules_number = 0
     for combo in combinations:
+        rules_number = rules_number + 1
         condition = ' & '.join(f"{var}['{level}']" for var, level in zip(antecedents, combo))
 
-        # Example fuzzy rule assignment logic (can be customized)
-        if 'high' in combo.count('high') >= 3:
+        # Fixed fuzzy rule assignment logic
+        if combo.count('high') >= 3:
             risk = "risk_score['high']"
-        elif 'low' in combo.count('low') >= 3:
+        elif combo.count('low') >= 3:
             risk = "risk_score['low']"
         else:
             risk = "risk_score['medium']"
 
         rules.append(f"ctrl.Rule({condition}, {risk})")
 
-    return rules
+    return [rules, rules_number]
+
+
+def download_fuzzy_rules(request):
+    rules_response = generate_rules()
+    all_rules = rules_response[0]
+    number_of_rules = rules_response[1]
+    
+    # Prepare text file content
+    filename = f"fuzzy_rules_{slugify(datetime.now().isoformat())}.txt"
+    file_content = f"{number_of_rules} Rules\n\n" + "\n".join(all_rules)
+
+    # Create response to download file
+    response = HttpResponse(file_content, content_type='text/plain')
+    response['Content-Disposition'] = f'attachment; filename="{filename}"'
+
+    return response
