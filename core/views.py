@@ -1,6 +1,7 @@
 import io
 import urllib
 import base64
+import itertools
 import numpy as np
 import skfuzzy as fuzz
 import matplotlib
@@ -201,3 +202,30 @@ def risk_view(request):
         return render(request, 'core/risk.html', context)
 
     return render(request, 'core/risk.html')
+
+
+def rules():
+    # Define membership levels
+    levels = ['low', 'medium', 'high']
+    antecedents = ['damage_potential', 'exploitability', 'reproducibility', 'affected_users', 'discoverability']
+
+    # Generate all 243 combinations
+    combinations = list(itertools.product(levels, repeat=len(antecedents)))
+
+    # Create rules list
+    rules = []
+
+    for combo in combinations:
+        condition = ' & '.join(f"{var}['{level}']" for var, level in zip(antecedents, combo))
+
+        # Example fuzzy rule assignment logic (can be customized)
+        if 'high' in combo.count('high') >= 3:
+            risk = "risk_score['high']"
+        elif 'low' in combo.count('low') >= 3:
+            risk = "risk_score['low']"
+        else:
+            risk = "risk_score['medium']"
+
+        rules.append(f"ctrl.Rule({condition}, {risk})")
+
+    return rules
