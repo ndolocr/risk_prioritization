@@ -1,23 +1,76 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Fuzzy Risk Score</title>
-</head>
-<body>
-    <h1>DREAD Risk Calculator</h1>
-    <form method="post" action="{% url 'risk:calculate_risk' %}">
-        {% csrf_token %}
-        <label>Exploitability:</label> <input type="number" name="exploitability" value="{{ input.e }}"><br>
-        <label>Affected Users:</label> <input type="number" name="affected_users" value="{{ input.a }}"><br>
-        <label>Discoverability:</label> <input type="number" name="discoverability" value="{{ input.d }}"><br>
-        <label>Reproducibility:</label> <input type="number" name="reproducibility" value="{{ input.r }}"><br>
-        <label>Damage Potential:</label> <input type="number" name="damage_potential" value="{{ input.dp }}"><br>
-        <button type="submit">Calculate Risk</button>
-    </form>
+{% extends 'base.html' %}
 
-    {% if result %}
-    <h2>Calculated Risk Score: {{ result }}</h2>
-    <img src="data:image/png;base64,{{ graph }}" />
+{% block context %}
+
+    <!-- <h1>DREAD Risk Calculator</h1> -->
+     <div class="row">
+        <div class="col-md-12">
+            <div class="alert alert-primary" role="alert">
+                <h1>DREAD Risk Calculator</h1>
+            </div>
+        </div>
+
+        <div class="col-md-12" style="border: solid 1px #e3e3e3; padding: 5%; border-radius: 1%;">
+            <form method="post" action="{% url 'risk:calculate_risk' %}">
+                {% csrf_token %}
+        
+                <div class="row">
+                    <div class="col-md-12">                
+                        <div class="form-group">                
+                            <label for="exampleInputEmail1">Exploitability</label>
+                            <input type="number" class="form-control" name="exploitability" id="exploitability" aria-describedby="exploitabilityHelp" placeholder="Exploitability">                                              
+                        </div>
+                    </div>
+
+                    <div class="col-md-12">                
+                        <div class="form-group">                
+                            <label for="exampleInputEmail1">Affected Users</label>
+                            <input type="number" class="form-control" name="affected_users" id="affected_users" aria-describedby="affected_usersHelp" placeholder="Affected Users">                            
+                        </div>
+                    </div>
+
+                    <div class="col-md-12">                
+                        <div class="form-group">                
+                            <label for="exampleInputEmail1">Discoverability</label>
+                            <input type="number" class="form-control" name="discoverability" id="discoverability" aria-describedby="discoverabilityHelp" placeholder="Discoverability">                            
+                        </div>
+                    </div>
+
+                    <div class="col-md-12">                
+                        <div class="form-group">                
+                            <label for="exampleInputEmail1">Reproducibility</label>
+                            <input type="number" class="form-control" name="reproducibility" id="reproducibility" aria-describedby="reproducibilityHelp" placeholder="Reproducibility">                            
+                        </div>
+                    </div>
+
+                    <div class="col-md-12">                
+                        <div class="form-group">                
+                            <label for="exampleInputEmail1">Damage Potential</label>
+                            <input type="number" class="form-control" name="damage_potential" id="damage_potential" aria-describedby="damage_potentialHelp" placeholder="Damage Potential">                            
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </div>
+     
+        
+            </form>
+        </div>
+     </div>
+    
+
+     {% if result %}
+     <div class="row" style="margin-top: 2%; padding: 5%; border: solid 1px #e3e3e3; border-radius: 1%;">
+        <div class="col-md-6">            
+            <h2>Calculated Risk Score: {{ result }}</h2>
+            <img src="data:image/png;base64,{{ graph }}" />            
+        </div>
+
+        <div class="col-md-6" style=" border-left:solid 1px #e3e3e3 ;">            
+            <h2>Risk Score with : {{ result }}</h2>
+            <img src="data:image/png;base64,{{ graph }}" />            
+        </div>
+    </div>
     {% endif %}
-</body>
-</html>
+
+  {% endblock %}

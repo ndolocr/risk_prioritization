@@ -5,5 +5,6 @@ app_name = 'risk'
 urlpatterns = [
     path('', views.risk, name='calculate_risk'),
     path('view', views.risk_view, name='calculate_risk'),
-    path('rules/', views.download_fuzzy_rules, name='download_fuzzy_rules'),
+    path('view/rules/', views.view_fuzzy_rules, name='view_fuzzy_rules'),
+    path('download/rules/', views.download_fuzzy_rules, name='download_fuzzy_rules'),
 ]

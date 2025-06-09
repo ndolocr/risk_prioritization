@@ -210,7 +210,7 @@ def risk_view(request):
 def generate_rules():
     # Define membership levels
     levels = ['low', 'medium', 'high']
-    antecedents = ['damage_potential', 'exploitability', 'reproducibility', 'affected_users', 'discoverability']
+    antecedents = ['cost', 'damage_potential', 'exploitability', 'reproducibility', 'affected_users', 'discoverability']
 
     # Generate all 243 combinations
     combinations = list(itertools.product(levels, repeat=len(antecedents)))
@@ -250,3 +250,8 @@ def download_fuzzy_rules(request):
     response['Content-Disposition'] = f'attachment; filename="{filename}"'
 
     return response
+
+def view_fuzzy_rules(request):
+    rules_response = generate_rules()
+    all_rules = rules_response[0]
+    number_of_rules = rules_response[1]
