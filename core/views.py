@@ -59,13 +59,9 @@ def risk(request):
         risk_score['medium'] = fuzz.trimf(risk_score.universe, [0, 5, 10])
         risk_score['high'] = fuzz.trimf(risk_score.universe, [5, 10, 10])
 
-        rules = [
-            ctrl.Rule(damage_potential['high'] & exploitability['high'], risk_score['high']),
-            ctrl.Rule(reproducibility['high'] & affected_users['high'], risk_score['high']),
-            ctrl.Rule(discoverability['low'] & exploitability['low'], risk_score['low']),
-            ctrl.Rule(damage_potential['medium'] | affected_users['medium'], risk_score['medium']),
-            ctrl.Rule(exploitability['low'] & damage_potential['low'], risk_score['low']),
-        ]
+        rules = generate_rules_with_cost()[0]
+
+        print(f"Rules ====> {rules}")
 
         risk_ctrl = ctrl.ControlSystem(rules)
         risk_sim = ctrl.ControlSystemSimulation(risk_ctrl)
@@ -151,13 +147,29 @@ def risk_view(request):
         risk_score['medium'] = fuzz.trimf(risk_score.universe, [0, 5, 10])
         risk_score['high'] = fuzz.trimf(risk_score.universe, [5, 10, 10])
 
-        rules = [
-            ctrl.Rule(damage_potential['high'] & exploitability['high'], risk_score['high']),
-            ctrl.Rule(reproducibility['high'] & affected_users['high'], risk_score['high']),
-            ctrl.Rule(discoverability['low'] & exploitability['low'], risk_score['low']),
-            ctrl.Rule(damage_potential['medium'] | affected_users['medium'], risk_score['medium']),
-            ctrl.Rule(exploitability['low'] & damage_potential['low'], risk_score['low']),
-        ]
+        # rules = [
+        #     ctrl.Rule(damage_potential['high'] & exploitability['high'], risk_score['high']),
+        #     ctrl.Rule(reproducibility['high'] & affected_users['high'], risk_score['high']),
+        #     ctrl.Rule(discoverability['low'] & exploitability['low'], risk_score['low']),
+        #     ctrl.Rule(damage_potential['medium'] | affected_users['medium'], risk_score['medium']),
+        #     ctrl.Rule(exploitability['low'] & damage_potential['low'], risk_score['low']),
+        # ]
+
+        # ctrl.Rule(damage_potential['low'] & exploitability['low'] & reproducibility['low'] & affected_users['low'] & discoverability['low'], risk_score['low'])
+        # ctrl.Rule(damage_potential['low'] & exploitability['low'] & reproducibility['low'] & affected_users['low'] & discoverability['medium'], risk_score['low'])
+        # ctrl.Rule(damage_potential['low'] & exploitability['low'] & reproducibility['low'] & affected_users['low'] & discoverability['high'], risk_score['low'])
+        # ctrl.Rule(damage_potential['low'] & exploitability['low'] & reproducibility['low'] & affected_users['medium'] & discoverability['low'], risk_score['low'])
+        # ctrl.Rule(damage_potential['low'] & exploitability['low'] & reproducibility['low'] & affected_users['medium'] & discoverability['medium'], risk_score['low'])
+        # ctrl.Rule(damage_potential['low'] & exploitability['low'] & reproducibility['low'] & affected_users['medium'] & discoverability['high'], risk_score['low'])
+        # ctrl.Rule(damage_potential['low'] & exploitability['low'] & reproducibility['low'] & affected_users['high'] & discoverability['low'], risk_score['low'])
+        # ctrl.Rule(damage_potential['low'] & exploitability['low'] & reproducibility['low'] & affected_users['high'] & discoverability['medium'], risk_score['low'])
+        # ctrl.Rule(damage_potential['low'] & exploitability['low'] & reproducibility['low'] & affected_users['high'] & discoverability['high'], risk_score['low'])
+        # ctrl.Rule(damage_potential['low'] & exploitability['low'] & reproducibility['medium'] & affected_users['low'] & discoverability['low'], risk_score['low'])
+
+        rules = list(generate_rules_without_cost()[0])
+        print(f"Rules ====> {type(rules)}")
+        for rule in rules[:10]:
+            print(type(rule))
 
         risk_ctrl = ctrl.ControlSystem(rules)
         risk_sim = ctrl.ControlSystemSimulation(risk_ctrl)
