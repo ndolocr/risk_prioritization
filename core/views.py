@@ -213,8 +213,12 @@ def risk_without_cost_for_windows(request):
     
     return render(request, 'core/risk.html')
 
-def risk_view(request):
+def risk_with_cost_for_macbook(request):
     if request.method == 'POST':
+        rules = []
+        levels = ['low', 'medium', 'high']
+        antecedents = ['cost', 'damage_potential', 'exploitability', 'reproducibility', 'affected_users', 'discoverability']
+
         exploitability_input = int(request.POST.get('exploitability'))
         affected_users_input = int(request.POST.get('affected_users'))
         discoverability_input = int(request.POST.get('discoverability'))
@@ -254,29 +258,19 @@ def risk_view(request):
         risk_score['medium'] = fuzz.trimf(risk_score.universe, [0, 5, 10])
         risk_score['high'] = fuzz.trimf(risk_score.universe, [5, 10, 10])
 
-        # rules = [
-        #     ctrl.Rule(damage_potential['high'] & exploitability['high'], risk_score['high']),
-        #     ctrl.Rule(reproducibility['high'] & affected_users['high'], risk_score['high']),
-        #     ctrl.Rule(discoverability['low'] & exploitability['low'], risk_score['low']),
-        #     ctrl.Rule(damage_potential['medium'] | affected_users['medium'], risk_score['medium']),
-        #     ctrl.Rule(exploitability['low'] & damage_potential['low'], risk_score['low']),
-        # ]
+        combinations = list(itertools.product(levels, repeat=len(antecedents)))
+        for combo in combinations:
+            rules_number = rules_number + 1
+            condition = ' & '.join(f"{var}['{level}']" for var, level in zip(antecedents, combo))
+            # Fixed fuzzy rule assignment logic
+            if combo.count('high') >= 3:
+                risk = "risk_score['high']"
+            elif combo.count('low') >= 3:
+                risk = "risk_score['low']"
+            else:
+                risk = "risk_score['medium']"
 
-        # ctrl.Rule(damage_potential['low'] & exploitability['low'] & reproducibility['low'] & affected_users['low'] & discoverability['low'], risk_score['low'])
-        # ctrl.Rule(damage_potential['low'] & exploitability['low'] & reproducibility['low'] & affected_users['low'] & discoverability['medium'], risk_score['low'])
-        # ctrl.Rule(damage_potential['low'] & exploitability['low'] & reproducibility['low'] & affected_users['low'] & discoverability['high'], risk_score['low'])
-        # ctrl.Rule(damage_potential['low'] & exploitability['low'] & reproducibility['low'] & affected_users['medium'] & discoverability['low'], risk_score['low'])
-        # ctrl.Rule(damage_potential['low'] & exploitability['low'] & reproducibility['low'] & affected_users['medium'] & discoverability['medium'], risk_score['low'])
-        # ctrl.Rule(damage_potential['low'] & exploitability['low'] & reproducibility['low'] & affected_users['medium'] & discoverability['high'], risk_score['low'])
-        # ctrl.Rule(damage_potential['low'] & exploitability['low'] & reproducibility['low'] & affected_users['high'] & discoverability['low'], risk_score['low'])
-        # ctrl.Rule(damage_potential['low'] & exploitability['low'] & reproducibility['low'] & affected_users['high'] & discoverability['medium'], risk_score['low'])
-        # ctrl.Rule(damage_potential['low'] & exploitability['low'] & reproducibility['low'] & affected_users['high'] & discoverability['high'], risk_score['low'])
-        # ctrl.Rule(damage_potential['low'] & exploitability['low'] & reproducibility['medium'] & affected_users['low'] & discoverability['low'], risk_score['low'])
-
-        rules = list(generate_rules_without_cost()[0])
-        print(f"Rules ====> {type(rules)}")
-        for rule in rules[:10]:
-            print(type(rule))
+            rules.append(f"ctrl.Rule({condition}, {risk})")
 
         risk_ctrl = ctrl.ControlSystem(rules)
         risk_sim = ctrl.ControlSystemSimulation(risk_ctrl)
