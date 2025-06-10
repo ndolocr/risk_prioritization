@@ -12,7 +12,7 @@
     <body>
         <div class="container-fluid">
             <nav class="navbar navbar-expand-lg navbar-light bg-light">
-                <a class="navbar-brand" href="{% url 'risk:calculate_risk' %}">DREAD-C</a>
+                <a class="navbar-brand" href="{% url 'risk:risk_with_cost_for_windows' %}">DREAD-C</a>
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                   <span class="navbar-toggler-icon"></span>
                 </button>
@@ -25,11 +25,11 @@
                                 Risk Calculator
                             </a>
                             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                <a class="dropdown-item" href="{% url 'risk:calculate_risk' %}">No Cost (Windows)</a>
-                                <a class="dropdown-item" href="{% url 'risk:calculate_risk' %}">No Cost (Mac-Book)</a>
+                                <a class="dropdown-item" href="{% url 'risk:risk_without_cost_for_windows' %}">No Cost (Windows)</a>
+                                <a class="dropdown-item" href="{% url 'risk:risk_without_cost_for_macbook' %}">No Cost (Mac-Book)</a>
                                 <div class="dropdown-divider"></div>
-                                <a class="dropdown-item" href="#">With Cost (Windows)</a>
-                                <a class="dropdown-item" href="#">With Cost (Mac-Book)</a>
+                                <a class="dropdown-item" href="{% url 'risk:risk_with_cost_for_windows' %}">With Cost (Windows)</a>
+                                <a class="dropdown-item" href="{% url 'risk:risk_with_cost_for_macbook' %}">With Cost (Mac-Book)</a>
                                 <div class="dropdown-divider"></div>
                                 <a class="dropdown-item" href="#">Compare Costs (Windows)</a>
                                 <a class="dropdown-item" href="#">Compare Costs (Mac-Book)</a>
