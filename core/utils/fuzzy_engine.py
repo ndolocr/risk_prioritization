@@ -48,7 +48,7 @@ def get_fuzzy_risk_control_system_with_cost():
 
 def get_fuzzy_risk_control_system_without_cost():
     levels = ['low', 'medium', 'high']
-    antecedents_names = ['cost', 'damage_potential', 'exploitability', 'reproducibility', 'affected_users', 'discoverability']
+    antecedents_names = ['damage_potential', 'exploitability', 'reproducibility', 'affected_users', 'discoverability']
     
     # Define Antecedents
     antecedents = {
