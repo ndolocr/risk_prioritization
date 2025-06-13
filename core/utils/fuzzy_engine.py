@@ -85,7 +85,7 @@ def get_fuzzy_risk_control_system_without_cost():
     # Control System
     control_system = ctrl.ControlSystem(rules)
 
-    return control_system, antecedents
+    return control_system, antecedents, risk_score
 
 def get_fuzzy_risk_control_system_with_cost():
     levels = ['low', 'medium', 'high']
