@@ -111,9 +111,9 @@ def risk_with_cost_for_windows(request):
             'input': input_dict,
         }
 
-        return render(request, 'core/risk.html', context)
+        return render(request, 'core/risk_with_cost.html', context)
     
-    return render(request, 'core/risk.html')
+    return render(request, 'core/risk_with_cost.html')
 
 def risk_without_cost_for_windows(request):
     if request.method == 'POST':
