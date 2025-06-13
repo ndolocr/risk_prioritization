@@ -374,10 +374,10 @@ def generate_rules_with_cost():
 
     return [rules, rules_number]
 
-def generate_rules_for_cost():
+def generate_rules_for_cost_only():
     # Define membership levels
     levels = ['low', 'medium', 'high']
-    antecedents = ['cost', 'damage_potential', 'exploitability', 'reproducibility', 'affected_users', 'discoverability']
+    antecedents = ['cost']
 
     # Generate all 243 combinations
     combinations = list(itertools.product(levels, repeat=len(antecedents)))
@@ -436,7 +436,22 @@ def download_fuzzy_rules_with_cost(request):
     number_of_rules = rules_response[1]
     
     # Prepare text file content
-    filename = f"fuzzy_rules_{slugify(datetime.now().isoformat())}.txt"
+    filename = f"fuzzy_rules_with_cost_{slugify(datetime.now().isoformat())}.txt"
+    file_content = f"{number_of_rules} Rules\n\n" + "\n".join(all_rules)
+
+    # Create response to download file
+    response = HttpResponse(file_content, content_type='text/plain')
+    response['Content-Disposition'] = f'attachment; filename="{filename}"'
+
+    return response
+
+def download_fuzzy_rules_for_cost_only(request):
+    rules_response = generate_rules_for_cost_only()
+    all_rules = rules_response[0]
+    number_of_rules = rules_response[1]
+    
+    # Prepare text file content
+    filename = f"fuzzy_rules_cost_only_{slugify(datetime.now().isoformat())}.txt"
     file_content = f"{number_of_rules} Rules\n\n" + "\n".join(all_rules)
 
     # Create response to download file
@@ -451,7 +466,7 @@ def download_fuzzy_rules_without_cost(request):
     number_of_rules = rules_response[1]
     
     # Prepare text file content
-    filename = f"fuzzy_rules_{slugify(datetime.now().isoformat())}.txt"
+    filename = f"fuzzy_rules_without_cost_{slugify(datetime.now().isoformat())}.txt"
     file_content = f"{number_of_rules} Rules\n\n" + "\n".join(all_rules)
 
     # Create response to download file
@@ -460,21 +475,21 @@ def download_fuzzy_rules_without_cost(request):
 
     return response
 
-# def view_fuzzy_rules_with_cost(request):
-#     rules_response = generate_rules_with_cost()
-#     all_rules = rules_response[0]
-#     number_of_rules = rules_response[1]
-#     print(f"{type(all_rules)}")
-#     # for rule in all_rules:
-#     #     print(f"{type(rule)}")
-#     context = {
-#         "all_rules": all_rules,
-#         "number_of_rules": number_of_rules,
-#     }
+def view_fuzzy_rules_with_cost(request):
+    rules_response = generate_rules_with_cost()
+    all_rules = rules_response[0]
+    number_of_rules = rules_response[1]
+    print(f"{type(all_rules)}")
+    # for rule in all_rules:
+    #     print(f"{type(rule)}")
+    context = {
+        "all_rules": all_rules,
+        "number_of_rules": number_of_rules,
+    }
 
-#     return render(request, 'core/rules_with_cost.html', context)
+    return render(request, 'core/rules_with_cost.html', context)
 
-# def view_fuzzy_rules_without_cost(request):
+def view_fuzzy_rules_without_cost(request):
     rules_response = generate_rules_without_cost()
     all_rules = rules_response[0]
     number_of_rules = rules_response[1]
@@ -487,3 +502,17 @@ def download_fuzzy_rules_without_cost(request):
     }
 
     return render(request, 'core/rules_without_cost.html', context)
+
+def view_fuzzy_rules_for_cost_only(request):
+    rules_response = generate_rules_for_cost_only()
+    all_rules = rules_response[0]
+    number_of_rules = rules_response[1]
+    print(f"{type(all_rules)}")
+    # for rule in all_rules:
+    #     print(f"{type(rule)}")
+    context = {
+        "all_rules": all_rules,
+        "number_of_rules": number_of_rules,
+    }
+
+    return render(request, 'core/cost_rules_only.html', context)
