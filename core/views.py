@@ -63,8 +63,7 @@ def risk_with_cost_for_windows(request):
         risk_score['high'] = fuzz.trimf(risk_score.universe, [5, 10, 10])
 
         combinations = list(itertools.product(levels, repeat=len(antecedents)))
-        for combo in combinations:
-            rules_number = rules_number + 1
+        for combo in combinations:            
             condition = ' & '.join(f"{var}['{level}']" for var, level in zip(antecedents, combo))
             # Fixed fuzzy rule assignment logic
             if combo.count('high') >= 3:
@@ -219,13 +218,18 @@ def risk_with_cost_for_macbook(request):
         levels = ['low', 'medium', 'high']
         antecedents = ['cost', 'damage_potential', 'exploitability', 'reproducibility', 'affected_users', 'discoverability']
 
+        cost_input = int(request.POST.get('cost'))
         exploitability_input = int(request.POST.get('exploitability'))
         affected_users_input = int(request.POST.get('affected_users'))
         discoverability_input = int(request.POST.get('discoverability'))
         reproducibility_input = int(request.POST.get('reproducibility'))
         damage_potential_input = int(request.POST.get('damage_potential'))
 
-        # cost = ctrl.Antecedent(np.arange(0, 11, 1), 'cost')
+        cost = ctrl.Antecedent(np.arange(0, 11, 1), 'cost')
+        cost['low'] = fuzz.trimf(cost.universe, [0, 0, 5])
+        cost['medium'] = fuzz.trimf(cost.universe, [0, 5, 10])
+        cost['high'] = fuzz.trimf(cost.universe, [5, 10, 10])
+
         exploitability = ctrl.Antecedent(np.arange(0, 11, 1), 'exploitability')
         exploitability['low'] = fuzz.trimf(exploitability.universe, [0, 0, 5])
         exploitability['medium'] = fuzz.trimf(exploitability.universe, [0, 5, 10])
@@ -259,8 +263,7 @@ def risk_with_cost_for_macbook(request):
         risk_score['high'] = fuzz.trimf(risk_score.universe, [5, 10, 10])
 
         combinations = list(itertools.product(levels, repeat=len(antecedents)))
-        for combo in combinations:
-            rules_number = rules_number + 1
+        for combo in combinations:            
             condition = ' & '.join(f"{var}['{level}']" for var, level in zip(antecedents, combo))
             # Fixed fuzzy rule assignment logic
             if combo.count('high') >= 3:
@@ -270,11 +273,13 @@ def risk_with_cost_for_macbook(request):
             else:
                 risk = "risk_score['medium']"
 
-            rules.append(f"ctrl.Rule({condition}, {risk})")
+            # rules.append(ctrl.Rule({condition}, {risk}))
+            rules.append(ctrl.Rule(eval(condition), eval(risk)))
 
         risk_ctrl = ctrl.ControlSystem(rules)
         risk_sim = ctrl.ControlSystemSimulation(risk_ctrl)
 
+        risk_sim.input['cost'] = cost_input
         risk_sim.input['exploitability'] = exploitability_input
         risk_sim.input['affected_users'] = affected_users_input
         risk_sim.input['discoverability'] = discoverability_input
@@ -315,9 +320,9 @@ def risk_with_cost_for_macbook(request):
             'result': round(result, 2),
             'input': input_dict,
         }
-        return render(request, 'core/risk.html', context)
+        return render(request, 'core/risk_with_cost.html', context)
 
-    return render(request, 'core/risk.html')
+    return render(request, 'core/risk_with_cost_for_macbook.html')
 
 def risk_without_cost_for_macbook(request):
     if request.method == 'POST':
