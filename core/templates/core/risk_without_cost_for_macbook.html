@@ -1,0 +1,141 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+    <!-- <h1>DREAD Risk Calculator</h1> -->
+     <div class="row">
+        <div class="col-md-12">
+            <div class="alert alert-primary" role="alert">
+                <h1>DREAD Risk Calculator without Cost Variable</h1>
+            </div>
+        </div>
+
+        <div class="col-md-4" style="border: solid 1px #e3e3e3; padding: 1%; border-radius: 1%;">
+            <form method="post" action="{% url 'risk:risk_without_cost_for_macbook' %}">
+                {% csrf_token %}
+        
+                <div class="row">
+
+                    <div class="col-md-12">                
+                        <div class="form-group">                
+                            <label for="exampleInputEmail1">Exploitability</label>
+                            <input type="number" class="form-control" name="exploitability" id="exploitability" aria-describedby="exploitabilityHelp" placeholder="Exploitability">                                              
+                        </div>
+                    </div>
+
+                    <div class="col-md-12">                
+                        <div class="form-group">                
+                            <label for="exampleInputEmail1">Affected Users</label>
+                            <input type="number" class="form-control" name="affected_users" id="affected_users" aria-describedby="affected_usersHelp" placeholder="Affected Users">                            
+                        </div>
+                    </div>
+
+                    <div class="col-md-12">                
+                        <div class="form-group">                
+                            <label for="exampleInputEmail1">Discoverability</label>
+                            <input type="number" class="form-control" name="discoverability" id="discoverability" aria-describedby="discoverabilityHelp" placeholder="Discoverability">                            
+                        </div>
+                    </div>
+
+                    <div class="col-md-12">                
+                        <div class="form-group">                
+                            <label for="exampleInputEmail1">Reproducibility</label>
+                            <input type="number" class="form-control" name="reproducibility" id="reproducibility" aria-describedby="reproducibilityHelp" placeholder="Reproducibility">                            
+                        </div>
+                    </div>
+
+                    <div class="col-md-12">                
+                        <div class="form-group">                
+                            <label for="exampleInputEmail1">Damage Potential</label>
+                            <input type="number" class="form-control" name="damage_potential" id="damage_potential" aria-describedby="damage_potentialHelp" placeholder="Damage Potential">                            
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </div>
+     
+        
+            </form>
+        </div>
+        <!-- <div class="col-md-8" style="border: solid 1px #e3e3e3; padding: 1%; border-radius: 1%;">
+            {% if result %}
+            <div class="row">
+                <div class="col-md-3">
+                    <table class="table table-striped table-bordered table-hover">                       
+                        <tbody>
+                            <tr>
+                                <td> Exploitability </td>
+                                <td> {{input.exploitability}} </td>
+                            </tr>
+                            <tr>
+                                <td> Affected Users </td>
+                                <td> {{input.affected_users}} </td>
+                            </tr>
+                            <tr>
+                                <td> Discoverability </td>
+                                <td> {{input.discoverability}} </td>
+                            </tr>
+                            <tr>
+                                <td> Reproducibility </td>
+                                <td> {{input.reproducibility}} </td>
+                            </tr>
+                            <tr>
+                                <td> Damage Potential </td>
+                                <td> {{input.damage_potential}} </td>
+                            </tr>                            
+                        </tbody>
+                    </table>
+                </div>
+                <div class="col-md-9">
+                    <h2>Calculated Risk Score: {{ result }}</h2>
+                <img src="data:image/png;base64,{{ graph }}" /> 
+                </div>
+            </div>                
+            {% endif %}
+        </div> -->
+     </div>
+     
+     <br>
+
+     <div class="row">
+        <!-- <div class="col-md-12" style="border: solid 1px #e3e3e3; padding: 1%; border-radius: 1%;"> -->
+            {% if result %}
+            <div class="row">
+                <div class="col-md-3" style="border-right: solid 1px #e3e3e3;">
+
+                    <h2>Input Factors</h2>
+                    <table class="table table-striped table-bordered table-hover">                    
+                        <tbody>
+                            <tr>
+                                <td> Exploitability </td>
+                                <td> {{input.exploitability}} </td>
+                            </tr>
+                            <tr>
+                                <td> Affected Users </td>
+                                <td> {{input.affected_users}} </td>
+                            </tr>
+                            <tr>
+                                <td> Discoverability </td>
+                                <td> {{input.discoverability}} </td>
+                            </tr>
+                            <tr>
+                                <td> Reproducibility </td>
+                                <td> {{input.reproducibility}} </td>
+                            </tr>
+                            <tr>
+                                <td> Damage Potential </td>
+                                <td> {{input.damage_potential}} </td>
+                            </tr>                            
+                        </tbody>
+                    </table>
+                </div>
+                <div class="col-md-9">
+                    <h2>Calculated Risk Score: {{ result }}</h2>
+                <img src="data:image/png;base64,{{ graph }}" /> 
+                </div>
+            </div>                
+            {% endif %}
+        <!-- </div> -->
+     </div>
+
+  {% endblock %}
