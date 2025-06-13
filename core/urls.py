@@ -10,6 +10,8 @@ urlpatterns = [
 
     path('view/rules/with/cost', views.view_fuzzy_rules_with_cost, name='view_fuzzy_rules_with_cost'),
     path('view/rules/without/cost', views.view_fuzzy_rules_without_cost, name='view_fuzzy_rules_without_cost'),
+    path('view/rules/for/cost/only', views.view_fuzzy_rules_for_cost_only, name='view_fuzzy_rules_for_cost_only'),
     path('download/rules/with/cost', views.download_fuzzy_rules_with_cost, name='download_fuzzy_rules_with_cost'),
     path('download/rules/without/cost', views.download_fuzzy_rules_without_cost, name='download_fuzzy_rules_without_cost'),
+    path('download/rules/for/cost/only', views.download_fuzzy_rules_for_cost_only, name='download_fuzzy_rules_for_cost_only'),
 ]

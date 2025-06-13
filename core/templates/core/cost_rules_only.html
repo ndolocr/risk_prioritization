@@ -6,16 +6,15 @@
      <div class="row">
         <div class="col-md-12">
             <div class="alert alert-primary" role="alert">
-                <h1> DREAD-C RULES</h1> <small> Rules <b>with</b>  COST.</small> | <small> <em> {{ number_of_rules }} </em> Rules Generated  </small>
+                <h1> DREAD-C RULES</h1> <small> <b>COST</b> rules Only</small> | <small> <em> {{ number_of_rules }} </em> Rules Generated  </small>
             </div>
         </div>
 
         <div class="col-md-6" style="margin-bottom: 10px; margin-top: 10px;">
-            <a href="{% url 'risk:download_fuzzy_rules_with_cost' %}" class="btn btn-danger"> Download Rules </a> <br>
+            <a href="{% url 'risk:download_fuzzy_rules_for_cost_only' %}" class="btn btn-danger"> Download Rules </a> <br>
         </div>
 
         <div class="col-md-6" style="margin-bottom: 10px; margin-top: 10px;">
-            Number of Rules: - {{ number_of_rules }}
         </div>
 
         <div class="col-md-12">
