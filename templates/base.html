@@ -25,11 +25,11 @@
                                 Risk Calculator
                             </a>
                             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                <a class="dropdown-item" href="{% url 'risk:risk_without_cost_for_windows' %}">No Cost (Windows)</a>
-                                <a class="dropdown-item" href="{% url 'risk:risk_without_cost_for_macbook' %}">No Cost (Mac-Book)</a>
+                                <a class="dropdown-item" href="{% url 'risk:risk_without_cost_for_windows' %}">DREAD (No Cost Variable)</a>
+                                <!-- <a class="dropdown-item" href="{% url 'risk:risk_without_cost_for_macbook' %}">No Cost (Mac-Book)</a> -->
                                 <div class="dropdown-divider"></div>
-                                <a class="dropdown-item" href="{% url 'risk:risk_with_cost_for_windows' %}">With Cost (Windows)</a>
-                                <a class="dropdown-item" href="{% url 'risk:risk_with_cost_for_macbook' %}">With Cost (Mac-Book)</a>
+                                <a class="dropdown-item" href="{% url 'risk:risk_with_cost_for_windows' %}">DREAD-C (With Cost Variable)</a>
+                                <!-- <a class="dropdown-item" href="{% url 'risk:risk_with_cost_for_macbook' %}">With Cost (Mac-Book)</a> -->
                                
                             </div>
                         </li>
@@ -39,11 +39,12 @@
                                 Rules
                             </a>
                             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                <a class="dropdown-item" href="{% url 'risk:view_fuzzy_rules_with_cost' %}">With Cost</a>
-                                <div class="dropdown-divider"></div>
-                                <a class="dropdown-item" href="{% url 'risk:view_fuzzy_rules_without_cost' %}">Without Cost</a>
-                                <div class="dropdown-divider"></div>                                
-                                <a class="dropdown-item" href="{% url 'risk:view_fuzzy_rules_for_cost_only' %}">Cost rules Only</a>                                
+                                <!-- <a class="dropdown-item" href="{% url 'risk:view_fuzzy_rules_with_cost' %}">With Cost</a> 
+                                <div class="dropdown-divider"></div> -->
+                                <a class="dropdown-item" href="{% url 'risk:view_fuzzy_rules_without_cost' %}">DREAD RULES</a>
+                                <div class="dropdown-divider"></div>   
+                                <a class="dropdown-item" href="{% url 'risk:view_fuzzy_rules_without_cost' %}">DREAD RULES</a>
+                               <!-- <a class="dropdown-item" href="{% url 'risk:view_fuzzy_rules_for_cost_only' %}">Cost rules Only</a> -->                               
                             </div>
                         </li>
                     
