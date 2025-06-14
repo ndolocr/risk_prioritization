@@ -17,7 +17,7 @@ from django.utils.text import slugify
 # from core.utils import rules_with_cost
 from core.utils import fuzzy_engine
 
-control_system_with_cost, antecedents_with_cost = fuzzy_engine.get_fuzzy_risk_control_system_with_cost()
+control_system_with_cost, antecedents_with_cost, risk_score_cost = fuzzy_engine.get_fuzzy_risk_control_system_with_cost_and_dread()
 control_system_without_cost, antecedents_without_cost, risk_score = fuzzy_engine.get_fuzzy_risk_control_system_without_cost()
 
 # Create your views here.
@@ -31,28 +31,31 @@ def risk_with_cost_for_windows(request):
         reproducibility_input = int(request.POST.get('reproducibility'))
         damage_potential_input = int(request.POST.get('damage_potential'))
 
-        cost_sim = ctrl.ControlSystemSimulation(control_system_with_cost)
-        risk_sim = ctrl.ControlSystemSimulation(control_system_without_cost)
+        dreadc_sim = ctrl.ControlSystemSimulation(control_system_with_cost)
+        dread_sim = ctrl.ControlSystemSimulation(control_system_without_cost)
 
-        cost_sim.input['cost'] = cost_input
+        dread_sim.input['exploitability'] = exploitability_input
+        dread_sim.input['affected_users'] = affected_users_input
+        dread_sim.input['discoverability'] = discoverability_input
+        dread_sim.input['reproducibility'] = reproducibility_input
+        dread_sim.input['damage_potential'] = damage_potential_input
 
-        risk_sim.input['exploitability'] = exploitability_input
-        risk_sim.input['affected_users'] = affected_users_input
-        risk_sim.input['discoverability'] = discoverability_input
-        risk_sim.input['reproducibility'] = reproducibility_input
-        risk_sim.input['damage_potential'] = damage_potential_input
-
-        risk_sim.compute()
-        cost_sim.compute()
+        dread_sim.compute()
+        dread_sim_result = dread_sim.output['risk_score']
+        print(f"DREAD -- > {dread_sim_result}")
         
-        result_cost_sim =cost_sim.output['cost_score']
-        result_risk_sim =risk_sim.output['risk_score']
 
-        result = result_cost_sim + result_risk_sim
+        dreadc_sim.input['cost'] = cost_input
+        dreadc_sim.input['dread'] = dread_sim_result
+        
+
+        dreadc_sim.compute()
+        dreadc_sim_result = dreadc_sim.output['risk_score']
+        print(f"DREADC -- > {dreadc_sim_result}")
 
         # Plot risk score output
         plt.figure()
-        risk_score.view(sim=risk_sim)
+        risk_score_cost.view(sim=dreadc_sim)
         buf = io.BytesIO()
         plt.savefig(buf, format='png')
         buf.seek(0)
@@ -60,12 +63,12 @@ def risk_with_cost_for_windows(request):
         buf.close()
 
         # Plot a simple bar chart showing individual and combined scores
-        labels = ['Cost Risk', 'Threat Risk', 'Combined Risk']
-        values = [result_cost_sim, result_risk_sim, result]
+        labels = ['Dread Risk', 'Dread-C Risk']
+        values = [dread_sim_result, dreadc_sim_result]
 
         plt.figure(figsize=(8, 5))
-        bars = plt.bar(labels, values, color=['#ff9999','#66b3ff','#99ff99'])
-        plt.ylim(0, 20)  # max score is 10 + 10
+        bars = plt.bar(labels, values, color=['#ff9999','#66b3ff'])
+        plt.ylim(0, 110)  # max score is 10 + 10
         plt.title('Fuzzy Risk Evaluation')
         plt.ylabel('Risk Score')
 
@@ -84,8 +87,8 @@ def risk_with_cost_for_windows(request):
 
         input_dict = {
             'cost': cost_input,
-            'result_cost_sim': round(result_cost_sim, 2),
-            'result_risk_sim': round(result_risk_sim, 2),
+            'result_cost_sim': round(dreadc_sim_result, 2),
+            'result_risk_sim': round(dread_sim_result, 2),
             'exploitability': exploitability_input, 
             'affected_users': affected_users_input, 
             'discoverability': discoverability_input, 
@@ -97,7 +100,7 @@ def risk_with_cost_for_windows(request):
             'graph': graph, 
             'graph_1': graph_1,            
             'input': input_dict,
-            'result': round(result, 2),
+            'result': round(dreadc_sim_result, 2),
         }
 
         return render(request, 'core/risk_with_cost_windows.html', context)
@@ -141,8 +144,8 @@ def risk_without_cost_for_windows(request):
         values = [result]
 
         plt.figure(figsize=(8, 5))
-        bars = plt.bar(labels, values, color=['#ff9999','#66b3ff','#99ff99'])
-        plt.ylim(0, 20)  # max score is 10 + 10
+        bars = plt.bar(labels, values, color=['#ff9999'])
+        plt.ylim(0, 110)  # max score is 10 + 10
         plt.title('Fuzzy Risk Evaluation')
         plt.ylabel('Risk Score')
 

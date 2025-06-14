@@ -6,7 +6,7 @@
      <div class="row">
         <div class="col-md-12">
             <div class="alert alert-success" role="alert">
-                <h1>DREAD-c Risk Calculator without Cost Variable</h1>
+                <h1>DREAD Risk Calculator without Cost Variable</h1>
             </div>
         </div>
 
@@ -92,7 +92,7 @@
                                 <td></td>
                             </tr>                             
                             <tr>
-                                <td>Risk Score</td>
+                                <td>DREAM Score</td>
                                 <td> {{ input.result_risk_sim }} </td>
                             </tr> 
                         </tbody>
@@ -108,16 +108,16 @@
 
      <div class="row">
             {% if result %}
-            <div class="row">             
-                <div class="col-md-6" style="border-right: solid 1px #e3e3e3;">
-                    <h2>Calculated Risk Score: {{ result }}</h2>
+         
+                <div class="col-md-5" style="border-right: solid 1px #e3e3e3;">
+                    <h2>DREAD Risk Score: {{ result }}</h2>
                     <img src="data:image/png;base64,{{ graph_1 }}" /> 
                 </div>
-                <div class="col-md-6">
-                    <h2>Calculated Risk Score: {{ result }}</h2>
+                <div class="col-md-5">
+                    <h2>DREAD Risk Score: {{ result }}</h2>
                     <img src="data:image/png;base64,{{ graph }}" /> 
                 </div>
-            </div>                
+            
             {% endif %}
      </div>
 
