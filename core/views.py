@@ -24,12 +24,12 @@ control_system_without_cost, antecedents_without_cost, risk_score = fuzzy_engine
 def risk_with_cost_for_windows(request):
     if request.method == 'POST':        
 
-        cost_input = int(request.POST.get('cost'))
-        exploitability_input = int(request.POST.get('exploitability'))
-        affected_users_input = int(request.POST.get('affected_users'))
-        discoverability_input = int(request.POST.get('discoverability'))
-        reproducibility_input = int(request.POST.get('reproducibility'))
-        damage_potential_input = int(request.POST.get('damage_potential'))
+        cost_input = int(request.POST.get('cost', 0))
+        exploitability_input = int(request.POST.get('exploitability', 0))
+        affected_users_input = int(request.POST.get('affected_users', 0))
+        discoverability_input = int(request.POST.get('discoverability', 0))
+        reproducibility_input = int(request.POST.get('reproducibility', 0))
+        damage_potential_input = int(request.POST.get('damage_potential', 0))
 
         dreadc_sim = ctrl.ControlSystemSimulation(control_system_with_cost)
         dread_sim = ctrl.ControlSystemSimulation(control_system_without_cost)
@@ -121,11 +121,11 @@ def risk_with_cost_for_windows(request):
 
 def risk_without_cost_for_windows(request):
     if request.method == 'POST':        
-        exploitability_input = int(request.POST.get('exploitability'))
-        affected_users_input = int(request.POST.get('affected_users'))
-        discoverability_input = int(request.POST.get('discoverability'))
-        reproducibility_input = int(request.POST.get('reproducibility'))
-        damage_potential_input = int(request.POST.get('damage_potential'))
+        exploitability_input = int(request.POST.get('exploitability', 0))
+        affected_users_input = int(request.POST.get('affected_users', 0))
+        discoverability_input = int(request.POST.get('discoverability', 0))
+        reproducibility_input = int(request.POST.get('reproducibility', 0))
+        damage_potential_input = int(request.POST.get('damage_potential', 0))
 
         cost_sim = ctrl.ControlSystemSimulation(control_system_with_cost)
         risk_sim = ctrl.ControlSystemSimulation(control_system_without_cost)
