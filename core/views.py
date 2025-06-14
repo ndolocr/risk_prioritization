@@ -96,10 +96,22 @@ def risk_with_cost_for_windows(request):
             'damage_potential': damage_potential_input
             }
         
+        decision=""
+
+        if dreadc_sim_result <= 30:
+            decision = "Accept Risk."
+        elif dreadc_sim_result > 30 and dreadc_sim_result < 40:
+            decision = "Transfer Risk."
+        elif dreadc_sim_result >= 40 and dreadc_sim_result <= 50:
+            decision = "Reduce Risk."
+        elif dreadc_sim_result > 50:
+            decision = "Avoid Risk."
+        
         context = {
             'graph': graph, 
             'graph_1': graph_1,            
             'input': input_dict,
+            'decision': decision,
             'result': round(dreadc_sim_result, 2),
         }
 
@@ -538,9 +550,9 @@ def generate_dream_c_rules():
         condition = ' & '.join(f"{var}['{level}']" for var, level in zip(antecedents, combo))
 
         # Fixed fuzzy rule assignment logic
-        if combo.count('high') >= 2:
+        if combo.count('high') >= 3:
             risk = "risk_score['high']"
-        elif combo.count('low') >= 2:
+        elif combo.count('low') >= 3:
             risk = "risk_score['low']"
         else:
             risk = "risk_score['medium']"

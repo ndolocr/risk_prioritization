@@ -146,7 +146,7 @@ def get_fuzzy_risk_control_system_with_cost_and_dread():
     # Define Consequent
     risk_score = ctrl.Consequent(np.arange(0, 101, 1), 'risk_score')
     risk_score['low'] = fuzz.trimf(risk_score.universe, [0, 0, 50])
-    risk_score['medium'] = fuzz.trimf(risk_score.universe, [0, 50, 100])
+    risk_score['medium'] = fuzz.trimf(risk_score.universe, [25, 50, 75])
     risk_score['high'] = fuzz.trimf(risk_score.universe, [50, 100, 100])
 
     # Generate rules
