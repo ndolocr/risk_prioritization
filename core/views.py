@@ -519,3 +519,60 @@ def view_fuzzy_rules_for_cost_only(request):
     }
 
     return render(request, 'core/cost_rules_only.html', context)
+
+#################################################################
+def generate_dream_c_rules():
+    # Define membership levels
+    levels = ['low', 'medium', 'high']
+    antecedents = ['cost', 'dream']
+
+    # Generate all combinations
+    combinations = list(itertools.product(levels, repeat=len(antecedents)))
+
+    # Create rules list
+    rules = []
+
+    rules_number = 0
+    for combo in combinations:
+        rules_number = rules_number + 1
+        condition = ' & '.join(f"{var}['{level}']" for var, level in zip(antecedents, combo))
+
+        # Fixed fuzzy rule assignment logic
+        if combo.count('high') >= 2:
+            risk = "risk_score['high']"
+        elif combo.count('low') >= 2:
+            risk = "risk_score['low']"
+        else:
+            risk = "risk_score['medium']"
+
+        rules.append(f"ctrl.Rule({condition}, {risk})")
+
+    return [rules, rules_number]
+
+def view_fuzzy_rules_for_dream_c(request):
+    rules_response = generate_dream_c_rules()
+    all_rules = rules_response[0]
+    number_of_rules = rules_response[1]
+    print(f"{type(all_rules)}")
+ 
+    context = {
+        "all_rules": all_rules,
+        "number_of_rules": number_of_rules,
+    }
+
+    return render(request, 'core/dreamc_rules.html', context)
+
+def download_dream_c_fuzzy_rules(request):
+    rules_response = generate_dream_c_rules()
+    all_rules = rules_response[0]
+    number_of_rules = rules_response[1]
+    
+    # Prepare text file content
+    filename = f"dream_c_fuzzy_rules_{slugify(datetime.now().isoformat())}.txt"
+    file_content = f"{number_of_rules} Rules\n\n" + "\n".join(all_rules)
+
+    # Create response to download file
+    response = HttpResponse(file_content, content_type='text/plain')
+    response['Content-Disposition'] = f'attachment; filename="{filename}"'
+
+    return response

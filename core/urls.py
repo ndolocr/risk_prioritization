@@ -9,8 +9,11 @@ urlpatterns = [
     path('without/cost/for/macbook', views.risk_without_cost_for_macbook, name='risk_without_cost_for_macbook'),
 
     path('view/rules/with/cost', views.view_fuzzy_rules_with_cost, name='view_fuzzy_rules_with_cost'),
+    path('view/rules/for/dream-c', views.view_fuzzy_rules_for_dream_c, name='view_fuzzy_rules_for_dream_c'),
     path('view/rules/without/cost', views.view_fuzzy_rules_without_cost, name='view_fuzzy_rules_without_cost'),
     path('view/rules/for/cost/only', views.view_fuzzy_rules_for_cost_only, name='view_fuzzy_rules_for_cost_only'),
+    
+    path('download/dream-c/rules', views.download_dream_c_fuzzy_rules, name='download_dream_c_fuzzy_rules'),
     path('download/rules/with/cost', views.download_fuzzy_rules_with_cost, name='download_fuzzy_rules_with_cost'),
     path('download/rules/without/cost', views.download_fuzzy_rules_without_cost, name='download_fuzzy_rules_without_cost'),
     path('download/rules/for/cost/only', views.download_fuzzy_rules_for_cost_only, name='download_fuzzy_rules_for_cost_only'),
