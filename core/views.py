@@ -17,13 +17,16 @@ from django.utils.text import slugify
 # from core.utils import rules_with_cost
 from core.utils import fuzzy_engine
 
+#Calling function from fuzzy_engine file to get geerated rules, risk score
+#and antecedents for DREAD and DREAD-C
 control_system_with_cost, antecedents_with_cost, risk_score_cost = fuzzy_engine.get_fuzzy_risk_control_system_with_cost_and_dread()
 control_system_without_cost, antecedents_without_cost, risk_score = fuzzy_engine.get_fuzzy_risk_control_system_without_cost()
 
-# Create your views here.
+# Calculate risk for DREAD and COST.
 def risk_with_cost_for_windows(request):
-    if request.method == 'POST':        
+    if request.method == 'POST':
 
+        # Get request from browser
         cost_input = int(request.POST.get('cost'))
         exploitability_input = int(request.POST.get('exploitability'))
         affected_users_input = int(request.POST.get('affected_users'))
@@ -31,27 +34,29 @@ def risk_with_cost_for_windows(request):
         reproducibility_input = int(request.POST.get('reproducibility'))
         damage_potential_input = int(request.POST.get('damage_potential'))
 
+        #Loading rules for DREAD nd DREAD-C
         dreadc_sim = ctrl.ControlSystemSimulation(control_system_with_cost)
         dread_sim = ctrl.ControlSystemSimulation(control_system_without_cost)
 
+        #Loading input values from brower an rules generated for DREAD
         dread_sim.input['exploitability'] = exploitability_input
         dread_sim.input['affected_users'] = affected_users_input
         dread_sim.input['discoverability'] = discoverability_input
         dread_sim.input['reproducibility'] = reproducibility_input
         dread_sim.input['damage_potential'] = damage_potential_input
 
+        #Compute score fr DREAD
         dread_sim.compute()
         dread_sim_result = dread_sim.output['risk_score']
         print(f"DREAD -- > {dread_sim_result}")
-        
 
+        #Loading input values from brower an rules generated for DREAD-C
         dreadc_sim.input['cost'] = cost_input
         dreadc_sim.input['dread'] = dread_sim_result
         
-
+        #Compute score fr DREAD-C
         dreadc_sim.compute()
         dreadc_sim_result = dreadc_sim.output['risk_score']
-        print(f"DREADC -- > {dreadc_sim_result}")
 
         # Plot risk score output
         plt.figure()
@@ -68,7 +73,7 @@ def risk_with_cost_for_windows(request):
 
         plt.figure(figsize=(8, 5))
         bars = plt.bar(labels, values, color=['#ff9999','#66b3ff'])
-        plt.ylim(0, 110)  # max score is 10 + 10
+        plt.ylim(0, 110)  
         plt.title('Fuzzy Risk Evaluation')
         plt.ylabel('Risk Score')
 
@@ -85,6 +90,7 @@ def risk_with_cost_for_windows(request):
         graph = base64.b64encode(buf.read()).decode('utf-8')
         buf.close()
 
+        #Generate output data to the browser 
         input_dict = {
             'cost': cost_input,
             'result_cost_sim': round(dreadc_sim_result, 2),
@@ -96,6 +102,7 @@ def risk_with_cost_for_windows(request):
             'damage_potential': damage_potential_input
             }
         
+        #Generating Decision
         decision=""
 
         if dreadc_sim_result <= 30:
@@ -107,6 +114,7 @@ def risk_with_cost_for_windows(request):
         elif dreadc_sim_result > 50:
             decision = "Avoid Risk."
         
+        #Creating object to be rendered on browser.
         context = {
             'graph': graph, 
             'graph_1': graph_1,            
@@ -115,6 +123,7 @@ def risk_with_cost_for_windows(request):
             'result': round(dreadc_sim_result, 2),
         }
 
+        #return html page t show resuts, together ith object and data to b rendered,
         return render(request, 'core/risk_with_cost_windows.html', context)
     
     return render(request, 'core/risk_with_cost_windows.html')
@@ -193,6 +202,16 @@ def risk_without_cost_for_windows(request):
         return render(request, 'core/risk_without_cost_windows.html', context)
     
     return render(request, 'core/risk_without_cost_windows.html')
+
+
+
+
+
+
+
+
+
+
 
 def risk_with_cost_for_macbook(request):
     if request.method == 'POST':
