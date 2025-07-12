@@ -17,4 +17,9 @@ urlpatterns = [
     path('download/rules/with/cost', views.download_fuzzy_rules_with_cost, name='download_fuzzy_rules_with_cost'),
     path('download/rules/without/cost', views.download_fuzzy_rules_without_cost, name='download_fuzzy_rules_without_cost'),
     path('download/rules/for/cost/only', views.download_fuzzy_rules_for_cost_only, name='download_fuzzy_rules_for_cost_only'),
+    path('risk_with_cost_from_generated_list', views.risk_with_cost_from_generated_list, name='risk_with_cost_from_generated_list'),
+    path('risk_with_cost_from_generated_list_with_ascending_cost', views.risk_with_cost_from_generated_list_with_ascending_cost, name='risk_with_cost_from_generated_list_with_ascending_cost'),
+    path('with/varying/dread/and/constant/cost/parameters', views.risk_with_varying_dread_and_constant_cost_parameters, name='risk_with_varying_dread_and_constant_cost_parameters'),
+    path('with/varying/cost/and/constant/dread/parameters', views.risk_with_varying_cost_and_constant_dread_parameters, name='risk_with_varying_cost_and_constant_dread_parameters'),
+    path('with/varying/cost/and/constant/dread/parameters/to/excel/<str:dread>/<str:generate_nums>', views.risk_with_varying_cost_and_constant_dread_parameters_to_excel, name='risk_with_varying_cost_and_constant_dread_parameters_to_excel'),
 ]

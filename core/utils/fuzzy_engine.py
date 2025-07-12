@@ -105,7 +105,7 @@ def get_fuzzy_risk_control_system_with_cost_and_dread():
 
     # Control System
     #Rules Generated for DREAD-C
-    print(f"RULES -- > {rules}")
+    # print(f"RULES -- > {rules}")
     control_system = ctrl.ControlSystem(rules)
 
     return control_system, antecedents, risk_score

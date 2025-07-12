@@ -36,6 +36,20 @@
 
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Varying Risk Calculator
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <a class="dropdown-item" href="{% url 'risk:risk_with_varying_cost_and_constant_dread_parameters' %}">Varying Cost Parameter (Constant DREAD)</a>
+                                <!-- <a class="dropdown-item" href="{% url 'risk:risk_without_cost_for_macbook' %}">No Cost (Mac-Book)</a> -->
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item" href="{% url 'risk:risk_with_cost_for_windows' %}">Varying DREAD Parameters (Constant Cost)</a>
+                                <!-- <a class="dropdown-item" href="{% url 'risk:risk_with_cost_for_macbook' %}">With Cost (Mac-Book)</a> -->
+                               
+                            </div>
+                        </li>
+
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 Rules
                             </a>
                             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
