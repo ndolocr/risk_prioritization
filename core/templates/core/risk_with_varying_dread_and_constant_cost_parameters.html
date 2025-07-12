@@ -46,6 +46,9 @@
                 <div class="col-md-12">
 
                     <h2>{{title}}</h2>
+                    {% if dread and generate_nums %}
+                    <a href="{% url 'risk:risk_with_varying_dread_and_constant_cost_parameters_to_excel' %}" class="btn btn-success">Print Excel Report</a> <br>
+                    {% endif %}
                     <table class="table table-striped table-bordered table-hover">
                         <thead>
                             <tr>

@@ -21,5 +21,6 @@ urlpatterns = [
     path('risk_with_cost_from_generated_list_with_ascending_cost', views.risk_with_cost_from_generated_list_with_ascending_cost, name='risk_with_cost_from_generated_list_with_ascending_cost'),
     path('with/varying/dread/and/constant/cost/parameters', views.risk_with_varying_dread_and_constant_cost_parameters, name='risk_with_varying_dread_and_constant_cost_parameters'),
     path('with/varying/cost/and/constant/dread/parameters', views.risk_with_varying_cost_and_constant_dread_parameters, name='risk_with_varying_cost_and_constant_dread_parameters'),
-    path('with/varying/cost/and/constant/dread/parameters/to/excel/<str:dread>/<str:generate_nums>', views.risk_with_varying_cost_and_constant_dread_parameters_to_excel, name='risk_with_varying_cost_and_constant_dread_parameters_to_excel'),
+    path('with/varying/cost/and/constant/dread/parameters/to/excel', views.risk_with_varying_cost_and_constant_dread_parameters_to_excel, name='risk_with_varying_cost_and_constant_dread_parameters_to_excel'),
+    path('with/varying/dread/and/constant/cost/parameters/to/excel', views.risk_with_varying_dread_and_constant_cost_parameters_to_excel, name='risk_with_varying_dread_and_constant_cost_parameters_to_excel'),
 ]
