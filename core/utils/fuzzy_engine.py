@@ -21,11 +21,16 @@ def get_fuzzy_risk_control_system_without_cost():
         a['medium'] = fuzz.trimf(a.universe, [0, 5, 10])
         a['high'] = fuzz.trimf(a.universe, [5, 10, 10])
 
+        risk_score = ctrl.Consequent(np.arange(0, 11, 1), 'risk_score')
+        risk_score['low'] = fuzz.trimf(risk_score.universe, [0, 0, 4])
+        risk_score['medium'] = fuzz.trimf(risk_score.universe, [3, 5, 7])
+        risk_score['high'] = fuzz.trimf(risk_score.universe, [6, 10, 10])
+
     # Define Consequent
-    risk_score = ctrl.Consequent(np.arange(0, 51, 1), 'risk_score')
-    risk_score['low'] = fuzz.trimf(risk_score.universe, [0, 0, 25])
-    risk_score['medium'] = fuzz.trimf(risk_score.universe, [0, 25, 50])
-    risk_score['high'] = fuzz.trimf(risk_score.universe, [25, 50, 50])
+    # risk_score = ctrl.Consequent(np.arange(0, 51, 1), 'risk_score')
+    # risk_score['low'] = fuzz.trimf(risk_score.universe, [0, 0, 25])
+    # risk_score['medium'] = fuzz.trimf(risk_score.universe, [0, 25, 50])
+    # risk_score['high'] = fuzz.trimf(risk_score.universe, [25, 50, 50])
 
     # Generate rules
     combinations = list(itertools.product(levels, repeat=len(antecedents_names)))
@@ -55,21 +60,33 @@ def get_fuzzy_risk_control_system_with_cost_and_dread():
     
     # Define Antecedents
     antecedents = {
-        name: ctrl.Antecedent(np.arange(0, 51, 1), name)
+        name: ctrl.Antecedent(np.arange(0, 11, 1), name)
         for name in antecedents_names
     }
+    # antecedents = {
+    #     name: ctrl.Antecedent(np.arange(0, 51, 1), name)
+    #     for name in antecedents_names
+    # }
 
     #Generating antecedents for Cost and DREAD
     for a in antecedents.values():
-        a['low'] = fuzz.trimf(a.universe, [0, 0, 25])
-        a['medium'] = fuzz.trimf(a.universe, [0, 25, 50])
-        a['high'] = fuzz.trimf(a.universe, [25, 50, 50])
+        a['low'] = fuzz.trimf(a.universe, [0, 0, 5])
+        a['medium'] = fuzz.trimf(a.universe, [0, 5, 10])
+        a['high'] = fuzz.trimf(a.universe, [5, 10, 10])
+    # for a in antecedents.values():
+    #     a['low'] = fuzz.trimf(a.universe, [0, 0, 25])
+    #     a['medium'] = fuzz.trimf(a.universe, [0, 25, 50])
+    #     a['high'] = fuzz.trimf(a.universe, [25, 50, 50])
 
     # Define Consequent
-    risk_score = ctrl.Consequent(np.arange(0, 101, 1), 'risk_score')
-    risk_score['low'] = fuzz.trimf(risk_score.universe, [0, 0, 50])
-    risk_score['medium'] = fuzz.trimf(risk_score.universe, [25, 50, 75])
-    risk_score['high'] = fuzz.trimf(risk_score.universe, [50, 100, 100])
+    risk_score = ctrl.Consequent(np.arange(0, 11, 1), 'risk_score')
+    risk_score['low'] = fuzz.trimf(risk_score.universe, [0, 0, 4])
+    risk_score['medium'] = fuzz.trimf(risk_score.universe, [3, 5, 7])
+    risk_score['high'] = fuzz.trimf(risk_score.universe, [6, 10, 10])
+    # risk_score = ctrl.Consequent(np.arange(0, 101, 1), 'risk_score')
+    # risk_score['low'] = fuzz.trimf(risk_score.universe, [0, 0, 50])
+    # risk_score['medium'] = fuzz.trimf(risk_score.universe, [25, 50, 75])
+    # risk_score['high'] = fuzz.trimf(risk_score.universe, [50, 100, 100])
 
     # Generate rules
     combinations = list(itertools.product(levels, repeat=len(antecedents_names)))
@@ -88,6 +105,7 @@ def get_fuzzy_risk_control_system_with_cost_and_dread():
 
     # Control System
     #Rules Generated for DREAD-C
+    print(f"RULES -- > {rules}")
     control_system = ctrl.ControlSystem(rules)
 
     return control_system, antecedents, risk_score

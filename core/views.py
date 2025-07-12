@@ -27,12 +27,12 @@ def risk_with_cost_for_windows(request):
     if request.method == 'POST':
 
         # Get request from browser
-        cost_input = int(request.POST.get('cost'))
-        exploitability_input = int(request.POST.get('exploitability'))
-        affected_users_input = int(request.POST.get('affected_users'))
-        discoverability_input = int(request.POST.get('discoverability'))
-        reproducibility_input = int(request.POST.get('reproducibility'))
-        damage_potential_input = int(request.POST.get('damage_potential'))
+        cost_input = float(request.POST.get('cost'))
+        exploitability_input = float(request.POST.get('exploitability'))
+        affected_users_input = float(request.POST.get('affected_users'))
+        discoverability_input = float(request.POST.get('discoverability'))
+        reproducibility_input = float(request.POST.get('reproducibility'))
+        damage_potential_input = float(request.POST.get('damage_potential'))
 
         #Loading rules for DREAD nd DREAD-C
         dreadc_sim = ctrl.ControlSystemSimulation(control_system_with_cost)
@@ -49,7 +49,7 @@ def risk_with_cost_for_windows(request):
         dread_sim.compute()
         dread_sim_result = dread_sim.output['risk_score']
         print(f"DREAD -- > {dread_sim_result}")
-
+        print(f"COST -- > {cost_input}")
         #Loading input values from brower an rules generated for DREAD-C
         dreadc_sim.input['cost'] = cost_input
         dreadc_sim.input['dread'] = dread_sim_result
@@ -57,6 +57,8 @@ def risk_with_cost_for_windows(request):
         #Compute score fr DREAD-C
         dreadc_sim.compute()
         dreadc_sim_result = dreadc_sim.output['risk_score']
+
+        print(f"DREAD - C --> {dreadc_sim_result}")
 
         # Plot risk score output
         plt.figure()
@@ -73,7 +75,8 @@ def risk_with_cost_for_windows(request):
 
         plt.figure(figsize=(8, 5))
         bars = plt.bar(labels, values, color=['#ff9999','#66b3ff'])
-        plt.ylim(0, 110)  
+        # plt.ylim(0, 110)
+        plt.ylim(0, 11)  
         plt.title('Fuzzy Risk Evaluation')
         plt.ylabel('Risk Score')
 
@@ -105,14 +108,23 @@ def risk_with_cost_for_windows(request):
         #Generating Decision
         decision=""
 
-        if dreadc_sim_result <= 30:
+        if dreadc_sim_result <= 3:
             decision = "Accept Risk."
-        elif dreadc_sim_result > 30 and dreadc_sim_result < 40:
+        elif dreadc_sim_result > 3 and dreadc_sim_result < 4:
             decision = "Transfer Risk."
-        elif dreadc_sim_result >= 40 and dreadc_sim_result <= 50:
+        elif dreadc_sim_result >= 4 and dreadc_sim_result <= 5:
             decision = "Reduce Risk."
-        elif dreadc_sim_result > 50:
+        elif dreadc_sim_result > 5:
             decision = "Avoid Risk."
+
+        # if dreadc_sim_result <= 30:
+        #     decision = "Accept Risk."
+        # elif dreadc_sim_result > 30 and dreadc_sim_result < 40:
+        #     decision = "Transfer Risk."
+        # elif dreadc_sim_result >= 40 and dreadc_sim_result <= 50:
+        #     decision = "Reduce Risk."
+        # elif dreadc_sim_result > 50:
+        #     decision = "Avoid Risk."
         
         #Creating object to be rendered on browser.
         context = {
@@ -555,7 +567,7 @@ def view_fuzzy_rules_for_cost_only(request):
 def generate_dream_c_rules():
     # Define membership levels
     levels = ['low', 'medium', 'high']
-    antecedents = ['cost', 'dream']
+    antecedents = ['cost', 'dread']
 
     # Generate all combinations
     combinations = list(itertools.product(levels, repeat=len(antecedents)))
@@ -569,9 +581,9 @@ def generate_dream_c_rules():
         condition = ' & '.join(f"{var}['{level}']" for var, level in zip(antecedents, combo))
 
         # Fixed fuzzy rule assignment logic
-        if combo.count('high') >= 3:
+        if combo.count('high') >= 2:
             risk = "risk_score['high']"
-        elif combo.count('low') >= 3:
+        elif combo.count('low') >= 2:
             risk = "risk_score['low']"
         else:
             risk = "risk_score['medium']"
