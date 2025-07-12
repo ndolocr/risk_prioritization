@@ -1,6 +1,9 @@
 import io
+import xlwt
 import urllib
 import base64
+import random
+import openpyxl
 import itertools
 import numpy as np
 import skfuzzy as fuzz
@@ -14,6 +17,8 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from django.utils.text import slugify
 
+from openpyxl.utils import get_column_letter
+
 # from core.utils import rules_with_cost
 from core.utils import fuzzy_engine
 
@@ -21,6 +26,12 @@ from core.utils import fuzzy_engine
 #and antecedents for DREAD and DREAD-C
 control_system_with_cost, antecedents_with_cost, risk_score_cost = fuzzy_engine.get_fuzzy_risk_control_system_with_cost_and_dread()
 control_system_without_cost, antecedents_without_cost, risk_score = fuzzy_engine.get_fuzzy_risk_control_system_without_cost()
+# control_system_with_cost = 10
+# antecedents_with_cost = 10
+# risk_score_cost = 10
+# control_system_without_cost = 10
+# antecedents_without_cost = 10 
+# risk_score = 10
 
 # Calculate risk for DREAD and COST.
 def risk_with_cost_for_windows(request):
@@ -619,3 +630,605 @@ def download_dream_c_fuzzy_rules(request):
     response['Content-Disposition'] = f'attachment; filename="{filename}"'
 
     return response
+
+
+
+# Generate risk with list values
+def risk_with_cost_from_generated_list(request):
+    list_size = 11
+
+    final_list = []
+
+    for val in range(0, list_size):
+        cost_input = val
+        exploitability_input = val
+        affected_users_input = val
+        discoverability_input = val
+        reproducibility_input = val
+        damage_potential_input = val
+
+        dreadc_sim = ctrl.ControlSystemSimulation(control_system_with_cost)
+        dread_sim = ctrl.ControlSystemSimulation(control_system_without_cost)
+
+        #Loading input values from brower an rules generated for DREAD
+        dread_sim.input['exploitability'] = exploitability_input
+        dread_sim.input['affected_users'] = affected_users_input
+        dread_sim.input['discoverability'] = discoverability_input
+        dread_sim.input['reproducibility'] = reproducibility_input
+        dread_sim.input['damage_potential'] = damage_potential_input
+
+        #Compute score fr DREAD
+        dread_sim.compute()
+        dread_sim_result = dread_sim.output['risk_score']
+        
+        #Loading input values from brower an rules generated for DREAD-C
+        dreadc_sim.input['cost'] = cost_input
+        dreadc_sim.input['dread'] = dread_sim_result
+        
+        #Compute score fr DREAD-C
+        dreadc_sim.compute()
+        dreadc_sim_result = dreadc_sim.output['risk_score']
+
+        decision=""
+
+        if dreadc_sim_result <= 3:
+            decision = "Accept Risk."
+        elif dreadc_sim_result > 3 and dreadc_sim_result < 4:
+            decision = "Transfer Risk."
+        elif dreadc_sim_result >= 4 and dreadc_sim_result <= 5:
+            decision = "Reduce Risk."
+        elif dreadc_sim_result > 5:
+            decision = "Avoid Risk."
+
+        print("==================================")
+        print(f"COST -- > {cost_input}")
+        print(f"EXPLOITABILITY -- > {exploitability_input}")
+        print(f"AFFECTED USERS -- > {affected_users_input}")
+        print(f"DISCOVERABILITY -- > {discoverability_input}")
+        print(f"REPRODUCIBILITY -- > {reproducibility_input}")
+        print(f"DAMAGE CONTROL -- > {damage_potential_input}")
+        print("------------------------------------")
+        print(f"DREAD SCORE -- > {dread_sim_result}")
+        print(f"DREAD - C SCORE --> {dreadc_sim_result}")
+
+        obj = {
+            'cost':cost_input,
+            'decision': decision,            
+            'exploitability':exploitability_input,
+            'affected_users':affected_users_input,
+            'discoverability':discoverability_input,
+            'reproducibility':reproducibility_input,
+            'damage_potential':damage_potential_input,
+            'dread_score': round(dread_sim_result, 2),
+            'dread_c_score': round(dreadc_sim_result, 2),
+        }
+
+        final_list.append(obj)
+    context = {        
+        "response": final_list,
+        "title": "Incrementing Uniform Parameters",
+    }
+
+    return render(request, 'core/risk_with_cost_list_generated.html', context=context)
+        
+        
+# Generate risk with list values
+def risk_with_cost_from_generated_list_with_ascending_cost(request):
+    list_size = 11
+    random_number = round(random.uniform(0, 10), 2)
+    final_list = []
+
+    for val in range(0, list_size):
+        cost_input = val
+        exploitability_input = random_number
+        affected_users_input = random_number
+        discoverability_input = random_number
+        reproducibility_input = random_number
+        damage_potential_input = random_number
+
+        dreadc_sim = ctrl.ControlSystemSimulation(control_system_with_cost)
+        dread_sim = ctrl.ControlSystemSimulation(control_system_without_cost)
+
+        #Loading input values from brower an rules generated for DREAD
+        dread_sim.input['exploitability'] = exploitability_input
+        dread_sim.input['affected_users'] = affected_users_input
+        dread_sim.input['discoverability'] = discoverability_input
+        dread_sim.input['reproducibility'] = reproducibility_input
+        dread_sim.input['damage_potential'] = damage_potential_input
+
+        #Compute score fr DREAD
+        dread_sim.compute()
+        dread_sim_result = dread_sim.output['risk_score']
+        
+        #Loading input values from brower an rules generated for DREAD-C
+        dreadc_sim.input['cost'] = cost_input
+        dreadc_sim.input['dread'] = dread_sim_result
+        
+        #Compute score fr DREAD-C
+        dreadc_sim.compute()
+        dreadc_sim_result = dreadc_sim.output['risk_score']
+
+        decision=""
+
+        if dreadc_sim_result <= 3:
+            decision = "Accept Risk."
+        elif dreadc_sim_result > 3 and dreadc_sim_result < 4:
+            decision = "Transfer Risk."
+        elif dreadc_sim_result >= 4 and dreadc_sim_result <= 5:
+            decision = "Reduce Risk."
+        elif dreadc_sim_result > 5:
+            decision = "Avoid Risk."
+
+        print("==================================")
+        print(f"COST -- > {cost_input}")
+        print(f"EXPLOITABILITY -- > {exploitability_input}")
+        print(f"AFFECTED USERS -- > {affected_users_input}")
+        print(f"DISCOVERABILITY -- > {discoverability_input}")
+        print(f"REPRODUCIBILITY -- > {reproducibility_input}")
+        print(f"DAMAGE CONTROL -- > {damage_potential_input}")
+        print("------------------------------------")
+        print(f"DREAD SCORE -- > {dread_sim_result}")
+        print(f"DREAD - C SCORE --> {dreadc_sim_result}")
+
+        obj = {
+            'cost':cost_input,
+            'decision': decision,            
+            'exploitability':exploitability_input,
+            'affected_users':affected_users_input,
+            'discoverability':discoverability_input,
+            'reproducibility':reproducibility_input,
+            'damage_potential':damage_potential_input,
+            'dread_score': round(dread_sim_result, 2),
+            'dread_c_score': round(dreadc_sim_result, 2),
+        }
+
+        final_list.append(obj)
+    context = {        
+        "response": final_list,
+        "title": "Incrementing Cost Parameters with constant DREAD Parameter",
+    }
+
+    return render(request, 'core/risk_with_cost_list_generated.html', context=context)
+
+def risk_with_varying_dread_and_constant_cost_parameters(request):
+    if request.method == "POST":
+        cost = float(request.POST.get('cost', 0))
+        list_number = int(request.POST.get('dread', 1000))
+
+        numbers = []
+        for _ in range(list_number):
+            number = round(random.uniform(0, 10), 2)
+            numbers.append(number)
+
+        numbers.sort()
+
+        final_list = []
+
+        for val in numbers:
+            cost_input = cost
+            exploitability_input = val
+            affected_users_input = val
+            discoverability_input = val
+            reproducibility_input = val
+            damage_potential_input = val
+
+            dreadc_sim = ctrl.ControlSystemSimulation(control_system_with_cost)
+            dread_sim = ctrl.ControlSystemSimulation(control_system_without_cost)
+
+            #Loading input values from brower an rules generated for DREAD
+            dread_sim.input['exploitability'] = exploitability_input
+            dread_sim.input['affected_users'] = affected_users_input
+            dread_sim.input['discoverability'] = discoverability_input
+            dread_sim.input['reproducibility'] = reproducibility_input
+            dread_sim.input['damage_potential'] = damage_potential_input
+
+            #Compute score fr DREAD
+            dread_sim.compute()
+            dread_sim_result = dread_sim.output['risk_score']
+            
+            #Loading input values from brower an rules generated for DREAD-C
+            dreadc_sim.input['cost'] = cost_input
+            dreadc_sim.input['dread'] = dread_sim_result
+            
+            #Compute score fr DREAD-C
+            dreadc_sim.compute()
+            dreadc_sim_result = dreadc_sim.output['risk_score']
+
+            dread_sim_result = round(dread_sim_result, 2)
+            dreadc_sim_result = round(dreadc_sim_result, 2)
+
+            decision=""
+
+            if dreadc_sim_result <= 3:
+                decision = "Accept Risk."
+            elif dreadc_sim_result > 3 and dreadc_sim_result < 4:
+                decision = "Transfer Risk."
+            elif dreadc_sim_result >= 4 and dreadc_sim_result <= 5:
+                decision = "Reduce Risk."
+            elif dreadc_sim_result > 5:
+                decision = "Avoid Risk."
+
+            print("==================================")
+            print(f"COST -- > {cost_input}")
+            print(f"EXPLOITABILITY -- > {exploitability_input}")
+            print(f"AFFECTED USERS -- > {affected_users_input}")
+            print(f"DISCOVERABILITY -- > {discoverability_input}")
+            print(f"REPRODUCIBILITY -- > {reproducibility_input}")
+            print(f"DAMAGE CONTROL -- > {damage_potential_input}")
+            print("------------------------------------")
+            print(f"DREAD SCORE -- > {dread_sim_result}")
+            print(f"DREAD - C SCORE --> {dreadc_sim_result}")
+
+            obj = {
+                'cost':cost_input,
+                'decision': decision,            
+                'exploitability':exploitability_input,
+                'affected_users':affected_users_input,
+                'discoverability':discoverability_input,
+                'reproducibility':reproducibility_input,
+                'damage_potential':damage_potential_input,
+                'dread_score': dread_sim_result,
+                'dread_c_score': dreadc_sim_result,
+            }
+
+            final_list.append(obj)
+        context = {        
+            "response": final_list,
+            "title": "Incrementing Cost Parameters with constant DREAD Parameter",
+        }
+
+        
+        return render(request, 'core/risk_with_varying_dread_and_constant_cost_parameters.html', context=context)
+    return render(request, 'core/risk_with_varying_dread_and_constant_cost_parameters.html')
+
+def risk_with_varying_cost_and_constant_dread_parameters(request):
+    if request.method == "POST":
+        generate_nums = int(request.POST.get('generate_nums', 1))
+        dread = float(request.POST.get('dread', 10))
+
+        numbers = []
+        for _ in range(generate_nums):
+            number = round(random.uniform(0, 10), 2)
+            numbers.append(number)
+
+        numbers.sort()
+
+        final_list = []
+
+        for val in numbers:
+            cost_input = val
+            exploitability_input = dread
+            affected_users_input = dread
+            discoverability_input = dread
+            reproducibility_input = dread
+            damage_potential_input = dread
+
+            dreadc_sim = ctrl.ControlSystemSimulation(control_system_with_cost)
+            dread_sim = ctrl.ControlSystemSimulation(control_system_without_cost)
+
+            #Loading input values from brower an rules generated for DREAD
+            dread_sim.input['exploitability'] = exploitability_input
+            dread_sim.input['affected_users'] = affected_users_input
+            dread_sim.input['discoverability'] = discoverability_input
+            dread_sim.input['reproducibility'] = reproducibility_input
+            dread_sim.input['damage_potential'] = damage_potential_input
+
+            #Compute score fr DREAD
+            dread_sim.compute()
+            dread_sim_result = dread_sim.output['risk_score']
+            
+            #Loading input values from brower an rules generated for DREAD-C
+            dreadc_sim.input['cost'] = cost_input
+            dreadc_sim.input['dread'] = dread_sim_result
+            
+            #Compute score fr DREAD-C
+            dreadc_sim.compute()
+            dreadc_sim_result = dreadc_sim.output['risk_score']
+
+            dread_sim_result = round(dread_sim_result, 2)
+            dreadc_sim_result = round(dreadc_sim_result, 2)
+
+            decision=""
+
+            if dreadc_sim_result <= 3:
+                decision = "Accept Risk."
+            elif dreadc_sim_result > 3 and dreadc_sim_result < 4:
+                decision = "Transfer Risk."
+            elif dreadc_sim_result >= 4 and dreadc_sim_result <= 5:
+                decision = "Reduce Risk."
+            elif dreadc_sim_result > 5:
+                decision = "Avoid Risk."
+
+            print("==================================")
+            print(f"COST -- > {cost_input}")
+            print(f"EXPLOITABILITY -- > {exploitability_input}")
+            print(f"AFFECTED USERS -- > {affected_users_input}")
+            print(f"DISCOVERABILITY -- > {discoverability_input}")
+            print(f"REPRODUCIBILITY -- > {reproducibility_input}")
+            print(f"DAMAGE CONTROL -- > {damage_potential_input}")
+            print("------------------------------------")
+            print(f"DREAD SCORE -- > {dread_sim_result}")
+            print(f"DREAD - C SCORE --> {dreadc_sim_result}")
+
+            obj = {                
+                'cost':cost_input,
+                'decision': decision,                
+                'dread_score': dread_sim_result,
+                'dread_c_score': dreadc_sim_result,        
+                'exploitability':exploitability_input,
+                'affected_users':affected_users_input,
+                'discoverability':discoverability_input,
+                'reproducibility':reproducibility_input,
+                'damage_potential':damage_potential_input,                 
+            }
+
+            final_list.append(obj)
+        context = {    
+            'dread': dread,
+            "response": final_list,
+            'generate_nums': generate_nums,
+            "title": "Incrementing DREAD Parameters with constant COST Parameter",
+        }
+
+        
+        return render(request, 'core/risk_with_varying_cost_and_constant_dread_parameters.html', context=context)
+    
+    return render(request, 'core/risk_with_varying_cost_and_constant_dread_parameters.html', {"title": "Incrementing DREAD Parameters with constant COST Parameter", 'generate_nums': 10, 'dread': 10,})
+
+def risk_with_varying_cost_and_constant_dread_parameters_to_excel(request, dread, generate_nums):
+    generate_nums = int(generate_nums)
+    dread = float(dread)
+
+    numbers = []
+    for _ in range(generate_nums):
+        number = round(random.uniform(0, 10), 2)
+        numbers.append(number)
+
+    numbers.sort()
+
+    final_list = []
+
+    for val in numbers:
+        cost_input = val
+        exploitability_input = dread
+        affected_users_input = dread
+        discoverability_input = dread
+        reproducibility_input = dread
+        damage_potential_input = dread
+
+        dreadc_sim = ctrl.ControlSystemSimulation(control_system_with_cost)
+        dread_sim = ctrl.ControlSystemSimulation(control_system_without_cost)
+
+        #Loading input values from brower an rules generated for DREAD
+        dread_sim.input['exploitability'] = exploitability_input
+        dread_sim.input['affected_users'] = affected_users_input
+        dread_sim.input['discoverability'] = discoverability_input
+        dread_sim.input['reproducibility'] = reproducibility_input
+        dread_sim.input['damage_potential'] = damage_potential_input
+
+        #Compute score fr DREAD
+        dread_sim.compute()
+        dread_sim_result = dread_sim.output['risk_score']
+        
+        #Loading input values from brower an rules generated for DREAD-C
+        dreadc_sim.input['cost'] = cost_input
+        dreadc_sim.input['dread'] = dread_sim_result
+        
+        #Compute score fr DREAD-C
+        dreadc_sim.compute()
+        dreadc_sim_result = dreadc_sim.output['risk_score']
+
+        dread_sim_result = round(dread_sim_result, 2)
+        dreadc_sim_result = round(dreadc_sim_result, 2)
+
+        decision=""
+
+        if dreadc_sim_result <= 3:
+            decision = "Accept Risk."
+        elif dreadc_sim_result > 3 and dreadc_sim_result < 4:
+            decision = "Transfer Risk."
+        elif dreadc_sim_result >= 4 and dreadc_sim_result <= 5:
+            decision = "Reduce Risk."
+        elif dreadc_sim_result > 5:
+            decision = "Avoid Risk."
+
+        print("==================================")
+        print(f"COST -- > {cost_input}")
+        print(f"EXPLOITABILITY -- > {exploitability_input}")
+        print(f"AFFECTED USERS -- > {affected_users_input}")
+        print(f"DISCOVERABILITY -- > {discoverability_input}")
+        print(f"REPRODUCIBILITY -- > {reproducibility_input}")
+        print(f"DAMAGE CONTROL -- > {damage_potential_input}")
+        print("------------------------------------")
+        print(f"DREAD SCORE -- > {dread_sim_result}")
+        print(f"DREAD - C SCORE --> {dreadc_sim_result}")
+
+        obj = {
+            'cost':cost_input,
+            'decision': decision,            
+            'exploitability':exploitability_input,
+            'affected_users':affected_users_input,
+            'discoverability':discoverability_input,
+            'reproducibility':reproducibility_input,
+            'damage_potential':damage_potential_input,
+            'dread_score': dread_sim_result,
+            'dread_c_score': dreadc_sim_result,
+        }
+
+        final_list.append(obj)
+
+        filename = f"varying_cost_{slugify(datetime.now().isoformat())}.xls"
+
+        response = HttpResponse(content_type="application/ms-excel")
+        response["Content-Disposition"] = f'attachment; filename="{filename}"'
+        wb = xlwt.Workbook(encoding="utf-8")
+        ws = wb.add_sheet("DREAD-C")
+
+        # Heading styles
+        heading_font_style = xlwt.XFStyle()
+        heading_font_style.font.bold = True
+        heading_font_style.font.underline = True
+
+        # Sub Heading styles
+        sub_heading_font_style = xlwt.XFStyle()
+        sub_heading_font_style.font.bold = True
+        sub_heading_font_style.font.italic = True
+
+        # Column Heading styles
+        column_heading_font_style = xlwt.XFStyle()
+        column_heading_font_style.font.bold = True
+
+        # Adding Equity Bank Title
+        ws.write(0, 0, "DREAD-C Risk Calculation", heading_font_style) 
+
+        # Sheet body, remaining rows
+        font_style = xlwt.XFStyle()
+        # Writing column headings
+        ws.write(2, 0, "#", sub_heading_font_style)
+        ws.write(2, 1, "Exploitability", sub_heading_font_style)
+        ws.write(2, 2, "Affected Users", sub_heading_font_style)
+        ws.write(2, 3, "Discoverability", sub_heading_font_style)
+        ws.write(2, 4, "Reproducibility", sub_heading_font_style)
+        ws.write(2, 5, "Damage Potential", sub_heading_font_style)
+        ws.write(2, 6, "Cost", sub_heading_font_style)
+        ws.write(2, 7, "DREAD Score", sub_heading_font_style)
+        ws.write(2, 8, "DREAD-C Score", sub_heading_font_style)
+        ws.write(2, 9, "Decision", sub_heading_font_style)
+
+        row_num = 3
+        for obj in final_list:
+            ws.write(row_num, 0, row_num - 2, font_style)  # Serial number
+            ws.write(row_num, 1, obj["exploitability"], font_style)
+            ws.write(row_num, 2, obj["affected_users"], font_style)
+            ws.write(row_num, 3, obj["discoverability"], font_style)
+            ws.write(row_num, 4, obj["reproducibility"], font_style)
+            ws.write(row_num, 5, obj["damage_potential"], font_style)
+            ws.write(row_num, 6, obj["cost"], font_style)
+            ws.write(row_num, 7, obj["dread_score"], font_style)
+            ws.write(row_num, 8, obj["dread_c_score"], font_style)
+            ws.write(row_num, 9, obj["decision"], font_style)
+            row_num += 1
+        # for current_list in final_list:
+        #     ws.write(row_num, 0, obj["exploitability"], font_style)
+        #     for obj in current_list:                
+        #         ws.write(row_num, 1, obj["exploitability"], font_style)
+        #         ws.write(row_num, 2, obj["affected_users"], font_style)
+        #         ws.write(row_num, 3, obj["discoverability"], font_style)
+        #         ws.write(row_num, 4, obj["reproducibility"], font_style)
+        #         ws.write(row_num, 5, obj["damage_potential"], font_style)
+        #         ws.write(row_num, 6, obj["cost"], font_style)
+        #         ws.write(row_num, 7, obj["dread_score"], font_style)
+        #         ws.write(row_num, 8, obj["dread_c_score"], font_style)
+        #         ws.write(row_num, 9, obj["decision"], font_style)
+        #     row_num = row_num + 1
+
+        wb.save(response)
+        return response
+
+
+def risk_with_varying_dread_and_constant_cost_parameters_to_excel(request):
+    generate_nums = int(request.POST.get('generate_nums', 1))
+    dread = float(request.POST.get('dread', 10))
+
+    numbers = []
+    for _ in range(generate_nums):
+        number = round(random.uniform(0, 10), 2)
+        numbers.append(number)
+
+    numbers.sort()
+
+    final_list = []
+
+    for val in numbers:
+        cost_input = val
+        exploitability_input = dread
+        affected_users_input = dread
+        discoverability_input = dread
+        reproducibility_input = dread
+        damage_potential_input = dread
+
+        dreadc_sim = ctrl.ControlSystemSimulation(control_system_with_cost)
+        dread_sim = ctrl.ControlSystemSimulation(control_system_without_cost)
+
+        #Loading input values from brower an rules generated for DREAD
+        dread_sim.input['exploitability'] = exploitability_input
+        dread_sim.input['affected_users'] = affected_users_input
+        dread_sim.input['discoverability'] = discoverability_input
+        dread_sim.input['reproducibility'] = reproducibility_input
+        dread_sim.input['damage_potential'] = damage_potential_input
+
+        #Compute score fr DREAD
+        dread_sim.compute()
+        dread_sim_result = dread_sim.output['risk_score']
+        
+        #Loading input values from brower an rules generated for DREAD-C
+        dreadc_sim.input['cost'] = cost_input
+        dreadc_sim.input['dread'] = dread_sim_result
+        
+        #Compute score fr DREAD-C
+        dreadc_sim.compute()
+        dreadc_sim_result = dreadc_sim.output['risk_score']
+
+        dread_sim_result = round(dread_sim_result, 2)
+        dreadc_sim_result = round(dreadc_sim_result, 2)
+
+        decision=""
+
+        if dreadc_sim_result <= 3:
+            decision = "Accept Risk."
+        elif dreadc_sim_result > 3 and dreadc_sim_result < 4:
+            decision = "Transfer Risk."
+        elif dreadc_sim_result >= 4 and dreadc_sim_result <= 5:
+            decision = "Reduce Risk."
+        elif dreadc_sim_result > 5:
+            decision = "Avoid Risk."
+
+        print("==================================")
+        print(f"COST -- > {cost_input}")
+        print(f"EXPLOITABILITY -- > {exploitability_input}")
+        print(f"AFFECTED USERS -- > {affected_users_input}")
+        print(f"DISCOVERABILITY -- > {discoverability_input}")
+        print(f"REPRODUCIBILITY -- > {reproducibility_input}")
+        print(f"DAMAGE CONTROL -- > {damage_potential_input}")
+        print("------------------------------------")
+        print(f"DREAD SCORE -- > {dread_sim_result}")
+        print(f"DREAD - C SCORE --> {dreadc_sim_result}")
+
+        obj = {
+            'cost':cost_input,
+            'decision': decision,            
+            'exploitability':exploitability_input,
+            'affected_users':affected_users_input,
+            'discoverability':discoverability_input,
+            'reproducibility':reproducibility_input,
+            'damage_potential':damage_potential_input,
+            'dread_score': dread_sim_result,
+            'dread_c_score': dreadc_sim_result,
+        }
+
+        final_list.append(obj)
+
+        wb = openpyxl.Workbook()
+        ws = wb.active
+        ws.title = "DREAD Risk Results"
+
+        # Write header
+        headers = list(final_list[0].keys())
+        ws.append(headers)
+
+        # Write data rows
+        for item in final_list:
+            ws.append(list(item.values()))
+
+        # Auto-adjust column widths
+        for col_num, _ in enumerate(headers, 1):
+            col_letter = get_column_letter(col_num)
+            ws.column_dimensions[col_letter].width = 18
+
+        # Create HTTP response
+        response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+        filename = f"risk_results_dreadc.xlsx"
+        response['Content-Disposition'] = f'attachment; filename={filename}'
+
+        wb.save(response)
+        return response
